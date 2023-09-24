@@ -1,5 +1,9 @@
+import 'dart:io';
 import 'package:chatapp/Screens/home_screen.dart';
-
+import 'package:chatapp/api/api.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import '../../helper/dialogs.dart';
 import '../../main.dart';
 import 'package:flutter/material.dart';
 
@@ -18,12 +22,77 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     //Animated setting
-    Future.delayed(Duration(milliseconds: 500), () {
-      setState(() {
-        _isAnimate = true;
-      });
-    });
+    Future.delayed(
+      Duration(milliseconds: 500),
+      () {
+        setState(() {
+          _isAnimate = true;
+        });
+      },
+    );
   }
+
+//handle google login button
+  _handleGoogleBtnClick() {
+    //showing progress bar
+    Dialogs.showProgressBar(context);
+    //hiding progress bar
+    _signInWithGoogle().then(
+      (user) async {
+        Navigator.pop(context);
+        if (user != null) {
+          print('user: ${user.user}');
+          print('user Info: ${user.additionalUserInfo}');
+          if ((await APIs.userExists())) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const HomeScreen(),
+              ),
+            );
+          } else {
+            await APIs.createUser().then((then) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const HomeScreen()),
+              );
+            });
+          }
+        }
+      },
+    );
+  }
+
+  Future<UserCredential?> _signInWithGoogle() async {
+    try {
+      await InternetAddress.lookup('google.com');
+      // Trigger the authentication flow
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+      // Obtain the auth details from the request
+      final GoogleSignInAuthentication? googleAuth =
+          await googleUser?.authentication;
+
+      // Create a new credential
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth?.accessToken,
+        idToken: googleAuth?.idToken,
+      );
+
+      // Once signed in, return the UserCredential
+      return await APIs.auth.signInWithCredential(credential);
+    } catch (e) {
+      print('_signInWithGoogle: $e');
+      Dialogs.showSnackBar(context, 'Something wrong (check internet!)');
+      return null;
+    }
+  }
+
+  //sign out
+  // _signOut() async {
+  //   await FirebaseAuth.instance.signOut();
+  //   await GoogleSignIn().signOut();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -59,8 +128,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 elevation: 1,
               ),
               onPressed: () {
-                Navigator.pushReplacement(
-                    context, MaterialPageRoute(builder: (_) => HomeScreen()));
+                _handleGoogleBtnClick();
               },
               icon: Image.asset('images/google.png'),
               label: RichText(

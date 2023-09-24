@@ -1,5 +1,8 @@
 import 'package:chatapp/Screens/auth/login_screen.dart';
 import 'package:chatapp/Screens/home_screen.dart';
+import 'package:chatapp/api/api.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import '../../main.dart';
 import 'package:flutter/material.dart';
@@ -19,15 +22,26 @@ class _SplashScreenState extends State<SplashScreen> {
       //exit full-screen
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
       SystemChrome.setSystemUIOverlayStyle(
-        SystemUiOverlayStyle(statusBarColor: Colors.transparent),
+        SystemUiOverlayStyle(systemNavigationBarColor: Colors.white),
       );
-      //navigator to home screen
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => LoginScreen(),
-        ),
-      );
+      if (APIs.auth.currentUser != null) {
+        print('user: ${APIs.auth.currentUser}');
+        //navigator to home screen
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => HomeScreen(),
+          ),
+        );
+      } else {
+        //navigator to login screen
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => LoginScreen(),
+          ),
+        );
+      }
     });
   }
 

@@ -4,6 +4,22 @@
 	<dict>
 		<key>CFBundleDevelopmentRegion</key>
 		<string>$(DEVELOPMENT_LANGUAGE)</string>
+		<!-- Put me in the [my_project]/ios/Runner/Info.plist file -->
+		<!-- Google Sign-in Section -->
+		<key>CFBundleURLTypes</key>
+		<array>
+			<dict>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<!-- TODO Replace this value: -->
+					<!-- Copied from GoogleService-Info.plist key REVERSED_CLIENT_ID -->
+					<string>com.googleusercontent.apps.226695163915-cid7jcvmojq6jmukvfr7knfrbv8en06l</string>
+				</array>
+			</dict>
+		</array>
+		<!-- End of the Google Sign-in Section -->
 		<key>CFBundleDisplayName</key>
 		<!-- android:label="app name" -->
 		<string>Chatapp</string>
@@ -48,5 +64,10 @@
 		<true/>
 		<key>UIApplicationSupportsIndirectInputEvents</key>
 		<true/>
+		<!-- Permission for picking photo from iphon or camera -->
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>APP required access to the photo library for picking pictures</string>
+		<key>NSCameraUsageDescription</key>
+		<string>APP required access to the camera for taking pictures</string>
 	</dict>
 </plist>
